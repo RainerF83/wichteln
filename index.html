@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Familien Wichteln - Weihnachts-Edition</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎄</text></svg>">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,61 +26,179 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
             text-align: center;
             width: 100%;
-            max-width: 500px;
+            max-width: 550px; 
             border: 3px solid #c8e6c9;
+            position: relative; 
         }
         h1 {
             color: #c62828;
             margin-bottom: 25px;
             font-size: 2em;
         }
+        h4 {
+            color: #555;
+            margin-bottom: 15px;
+            margin-top: 0;
+        }
         p { margin-bottom: 12px; font-size: 1.1em; }
-        select, input[type="password"], button {
+        select, input[type="password"], input[type="text"], button {
             padding: 14px 20px;
             margin-top: 12px;
-            margin-bottom: 22px;
+            margin-bottom: 12px;
             border-radius: 10px;
             border: 1px solid #ced4da;
             font-size: 1em;
             width: calc(100% - 40px);
             box-sizing: border-box;
         }
-        select, input[type="password"] { background-color: #fff; }
+        select, input[type="password"], input[type="text"] { background-color: #fff; }
         button {
-            background-color: #28a745;
+            background-color: #28a745; 
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             border: none;
             font-weight: bold;
+            margin-bottom: 22px;
         }
         button:hover {
             background-color: #218838;
             transform: translateY(-2px);
         }
-        #ergebnis, #loginMessage {
-            font-size: 1.1em; /* Etwas kleiner für Login-Nachrichten */
+        #ergebnis, #loginMessage, #changePasswordMessageModal, #adminPasswordResetMessage, #adminDownloadMessage { 
+            font-size: 1.1em;
             font-weight: bold;
             min-height: 40px;
             padding: 10px;
             border-radius: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
             line-height: 1.5;
+            display: none;
         }
-        #ergebnis { font-size: 1.25em; min-height: 60px; line-height: 1.6; }
+        #ergebnis { font-size: 1.25em; min-height: 60px; line-height: 1.6; display: block; }
 
-        #resetButton, #logoutButton {
-            background-color: #d9534f;
-            display: none; /* Standardmäßig ausgeblendet */
-            margin-top: 5px;
+        .user-actions {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed #ddd;
         }
-        #resetButton:hover, #logoutButton:hover { background-color: #c9302c; }
-        #logoutButton { background-color: #f0ad4e; } /* Orange für Logout */
+        .user-actions button {
+            width: calc(50% - 25px); 
+            margin-left: 5px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        #openChangePasswordModalButton {
+            background-color: #007bff; 
+         }
+         #openChangePasswordModalButton:hover {
+            background-color: #0056b3;
+         }
+        #logoutButton { background-color: #f0ad4e; } 
         #logoutButton:hover { background-color: #ec971f; }
 
-        .hinweis { font-size: 0.9em; color: #555; margin-top: 25px; }
-        #appSection { display: none; } /* Wichtel-App standardmäßig ausblenden */
-        .loggedInUserText { font-weight: normal; color: #555; margin-bottom: 20px; }
+        /* .hinweis wurde entfernt bzw. der Inhalt geleert, falls der Tag bestehen bleiben soll */
+        .hinweis { 
+            font-size: 0.9em; 
+            color: #555; 
+            margin-top: 25px; 
+            /* Inhalt wurde entfernt, der Tag kann auch ganz entfernt werden, wenn nicht mehr benötigt */
+        } 
+        #appSection, #adminSection { display: none; } 
+
+        /* Admin Bereich Styles */
+        #adminSection {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #c62828; 
+            border-radius: 10px;
+            background-color: #fff5f5; 
+        }
+        #adminSection h4 {
+            color: #c62828; 
+            margin-bottom: 20px;
+        }
+        #adminSection h5 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #444;
+        }
+        #adminSection button, #adminSection select {
+            margin-bottom: 15px;
+        }
+        #resetDrawButton { 
+             background-color: #dc3545; 
+        }
+        #resetDrawButton:hover {
+            background-color: #c82333;
+        }
+        #adminResetUserPasswordButton {
+            background-color: #ffc107; 
+            color: #333;
+        }
+        #adminResetUserPasswordButton:hover {
+            background-color: #e0a800;
+        }
+        #downloadDrawsButton {
+            background-color: #17a2b8; /* Info Blau */
+        }
+        #downloadDrawsButton:hover {
+            background-color: #138496;
+        }
+
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.6); 
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 25px 35px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 450px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-content h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        .modal-content button {
+             background-color: #007bff;
+             margin-top: 15px;
+        }
+        .modal-content button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
@@ -96,44 +215,71 @@
         </div>
 
         <div id="appSection">
-            <h1>🎄🌟 Wichtel-Auslosung 🌟🎄</h1>
+            <h1 id="mainHeadline">🎄🌟 Wichtel-Auslosung <span id="currentYearHeadline"></span> 🌟🎄</h1>
             <p id="welcomeMessage">Hallo!</p>
-            <p class="loggedInUserText">Du bist angemeldet als: <strong id="loggedInUserName"></strong></p>
-            
             <button onclick="losZiehen()">🎅 Namen ziehen! 🤶</button>
             <div id="ergebnis">Klicke auf "Namen ziehen", um dein Wichtelgeheimnis zu lüften!</div>
 
-            <button id="resetButton" onclick="resetWichteln()">Neues Jahr, neues Glück? (Auslosung zurücksetzen)</button>
-            <button id="logoutButton" onclick="handleLogout()">Logout</button>
+            <div class="user-actions">
+                <button id="openChangePasswordModalButton" onclick="openChangePasswordModal()">Passwort ändern</button>
+                <button id="logoutButton" onclick="handleLogout()">Logout</button>
+            </div>
+
+            <div id="adminSection">
+                <h4>🛠️ Admin-Bereich 🛠️</h4>
+                <h5>Wichtel-Auslosung</h5>
+                <button id="resetDrawButton" onclick="resetWichteln()">Auslosung für <span class="dynamicYearAdmin"></span> zurücksetzen</button>
+                <button id="downloadDrawsButton" onclick="downloadDraws()">Ziehungen für <span class="dynamicYearAdmin"></span> herunterladen</button>
+                <div id="adminDownloadMessage"></div>
+                
+                <hr style="margin: 20px 0;">
+                <h5>Benutzer-Passwörter</h5>
+                <p style="font-size:0.9em; margin-bottom:5px;">Passwort für einen Benutzer auf Standard zurücksetzen:</p>
+                <select id="adminUserSelectForPasswordReset">
+                    <option value="">-- Benutzer auswählen --</option>
+                </select>
+                <button id="adminResetUserPasswordButton" onclick="adminResetUserPassword()">Passwort zurücksetzen</button>
+                <div id="adminPasswordResetMessage"></div>
+            </div>
         </div>
         
         <p class="hinweis">
-            Psst... Damit alle die gleichen Ziehungen sehen, sollte diese Seite am besten auf einem Webserver liegen. Frohes Wichteln! 🍪
-        </p>
+            </p>
+    </div>
+
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeChangePasswordModal()">&times;</span>
+            <h4>Passwort ändern</h4>
+            <div>
+                <input type="password" id="oldPasswordInputModal" placeholder="Altes Passwort">
+            </div>
+            <div>
+                <input type="password" id="newPasswordInputModal" placeholder="Neues Passwort (mind. 5 Zeichen)">
+            </div>
+            <div>
+                <input type="password" id="confirmNewPasswordInputModal" placeholder="Neues Passwort bestätigen">
+            </div>
+            <button onclick="handleChangePassword()">Passwort speichern</button>
+            <div id="changePasswordMessageModal"></div>
+        </div>
     </div>
 
     <script>
         // ============== Konfiguration ==============
         const teilnehmer = ["Tina", "Rainer", "Jonas", "Peter", "Karin", "Elke", "Rudi", "Tamara", "Sandro", "Renni", "Nico", "Anja"];
         const ADMIN_USER = "Rainer";
-        // WICHTIG: Passwörter hier eintragen. Diese müssen mit der verteilten Liste übereinstimmen!
-        // Für eine echte Anwendung NIEMALS Passwörter so im Client-Code speichern! Nur für diese private Familien-App.
-        const passwoerter = {
-            "Tina": "TinaGeheim123",
-            "Rainer": "RainerSpezial789",
-            "Jonas": "JonasWichtel00",
-            "Peter": "PeterFestlich55",
-            "Karin": "KarinStern44",
-            "Elke": "ElkeSchnee33",
-            "Rudi": "RudiGlöckchen22",
-            "Tamara": "TamaraEngel11",
-            "Sandro": "SandroSanta66",
-            "Renni": "RenniKeks77",
-            "Nico": "NicoTanne88",
-            "Anja": "AnjaLicht99"
+        
+        const defaultPasswoerter = {
+            "Tina": "TinaGeheim123", "Rainer": "RainerSpezial789", "Jonas": "JonasWichtel00",
+            "Peter": "PeterFestlich55", "Karin": "KarinStern44", "Elke": "ElkeSchnee33",
+            "Rudi": "RudiGlöckchen22", "Tamara": "TamaraEngel11", "Sandro": "SandroSanta66",
+            "Renni": "RenniKeks77", "Nico": "NicoTanne88", "Anja": "AnjaLicht99"
         };
-        // ===========================================
+        let passwoerter = {}; 
 
+        // ===========================================
+        // HTML Elemente
         const loginUserSelect = document.getElementById('loginUserSelect');
         const passwordInput = document.getElementById('passwordInput');
         const loginMessage = document.getElementById('loginMessage');
@@ -141,22 +287,61 @@
         
         const loginSection = document.getElementById('loginSection');
         const appSection = document.getElementById('appSection');
+        const mainHeadlineYearSpan = document.getElementById('currentYearHeadline');
         const welcomeMessage = document.getElementById('welcomeMessage');
-        const loggedInUserNameSpan = document.getElementById('loggedInUserName');
 
-        const resetButton = document.getElementById('resetButton');
+        const openChangePasswordModalButton = document.getElementById('openChangePasswordModalButton');
         const logoutButton = document.getElementById('logoutButton');
+        
+        // Admin Elemente
+        const adminSection = document.getElementById('adminSection');
+        const resetDrawButton = document.getElementById('resetDrawButton'); 
+        const downloadDrawsButton = document.getElementById('downloadDrawsButton');
+        const adminDownloadMessage = document.getElementById('adminDownloadMessage');
+        const adminUserSelectForPasswordReset = document.getElementById('adminUserSelectForPasswordReset');
+        const adminPasswordResetMessage = document.getElementById('adminPasswordResetMessage');
 
-        let aktuellerEingeloggterBenutzer = null; // Speichert den Namen des eingeloggten Benutzers
+        // Modal Elemente
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const oldPasswordInputModal = document.getElementById('oldPasswordInputModal');
+        const newPasswordInputModal = document.getElementById('newPasswordInputModal');
+        const confirmNewPasswordInputModal = document.getElementById('confirmNewPasswordInputModal');
+        const changePasswordMessageModal = document.getElementById('changePasswordMessageModal');
 
-        const ZIEHUNGEN_KEY_PREFIX = 'wichtelZiehungenFamilie_';
-        const GEZOGENE_PERSONEN_KEY_PREFIX = 'wichtelGezogenePersonenFamilie_';
-        // Die Schlüssel für localStorage sind jetzt benutzerspezifisch, um Konflikte zu vermeiden,
-        // aber die Ziehungen sind global. Wir brauchen einen globalen Satz von Ziehungen.
-        const GLOBAL_ZIEHUNGEN_KEY = 'wichtelGlobalZiehungen_Weihnachten2025_v3';
-        const GLOBAL_GEZOGENE_PERSONEN_KEY = 'wichtelGlobalGezogene_Weihnachten2025_v3';
+        let aktuellerEingeloggterBenutzer = null; 
+        let aktuellesJahr = new Date().getFullYear();
 
+        // localStorage Schlüssel (Version erhöht für potenzielle Strukturänderungen)
+        const GLOBAL_ZIEHUNGEN_KEY = `wichtelGlobalZiehungen_${aktuellesJahr}_v5`; 
+        const GLOBAL_GEZOGENE_PERSONEN_KEY = `wichtelGlobalGezogene_${aktuellesJahr}_v5`; 
+        const GLOBAL_PASSWOERTER_KEY = 'wichtelGlobalPasswoerter_v3'; 
 
+        // Passwort-Management
+        function loadPasswoerter() {
+            const storedPasswoerter = localStorage.getItem(GLOBAL_PASSWOERTER_KEY);
+            if (storedPasswoerter) {
+                passwoerter = JSON.parse(storedPasswoerter);
+                let passwordsUpdated = false;
+                teilnehmer.forEach(name => {
+                    if (!passwoerter[name] && defaultPasswoerter[name]) {
+                        passwoerter[name] = defaultPasswoerter[name];
+                        passwordsUpdated = true;
+                    }
+                });
+                if (passwordsUpdated) {
+                    savePasswoerter(); 
+                }
+            } else {
+                passwoerter = { ...defaultPasswoerter }; 
+                savePasswoerter();
+            }
+        }
+
+        function savePasswoerter() {
+            localStorage.setItem(GLOBAL_PASSWOERTER_KEY, JSON.stringify(passwoerter));
+        }
+
+        // Wichtel-Daten Management
         function getGespeicherteZiehungen() {
             const data = localStorage.getItem(GLOBAL_ZIEHUNGEN_KEY);
             return data ? JSON.parse(data) : {};
@@ -167,6 +352,13 @@
             return data ? JSON.parse(data) : [];
         }
 
+        // Initialisierungsfunktionen
+        function initDynamicYears() {
+            mainHeadlineYearSpan.textContent = aktuellesJahr;
+            const adminYearSpans = document.querySelectorAll('.dynamicYearAdmin');
+            adminYearSpans.forEach(span => span.textContent = aktuellesJahr);
+        }
+
         function initLoginDropdown() {
             teilnehmer.forEach(name => {
                 const option = document.createElement('option');
@@ -175,7 +367,18 @@
                 loginUserSelect.appendChild(option);
             });
         }
+        
+        function initAdminUserSelect() {
+            adminUserSelectForPasswordReset.innerHTML = '<option value="">-- Benutzer auswählen --</option>'; 
+            teilnehmer.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                adminUserSelectForPasswordReset.appendChild(option);
+            });
+        }
 
+        // UI Hilfsfunktionen
         function setNachrichtenStil(element, nachricht, typ) {
             element.innerHTML = nachricht;
             let bgColor, textColor, borderColor;
@@ -186,7 +389,7 @@
                     bgColor = "#f8d7da"; textColor = "#721c24"; borderColor = "#f5c6cb"; break;
                 case 'warnung':
                     bgColor = "#fff3cd"; textColor = "#856404"; borderColor = "#ffeeba"; break;
-                default: // Neutral oder Info
+                default: 
                     bgColor = "#e2e3e5"; textColor = "#383d41"; borderColor = "#d6d8db";
             }
             element.style.backgroundColor = bgColor;
@@ -195,6 +398,7 @@
             element.style.display = 'block';
         }
         
+        // Login / Logout
         function handleLogin() {
             const user = loginUserSelect.value;
             const pass = passwordInput.value;
@@ -212,21 +416,24 @@
                 aktuellerEingeloggterBenutzer = user;
                 loginSection.style.display = 'none';
                 appSection.style.display = 'block';
-                logoutButton.style.display = 'block';
+                logoutButton.style.display = 'inline-block'; 
+                openChangePasswordModalButton.style.display = 'inline-block'; 
                 welcomeMessage.textContent = `Hallo ${aktuellerEingeloggterBenutzer}!`;
-                loggedInUserNameSpan.textContent = aktuellerEingeloggterBenutzer;
 
-                loginMessage.style.display = 'none'; // Login-Nachricht ausblenden
-                passwordInput.value = ""; // Passwortfeld leeren
+                loginMessage.style.display = 'none'; 
+                passwordInput.value = ""; 
+                changePasswordMessageModal.style.display = 'none';
+                adminPasswordResetMessage.style.display = 'none';
+                adminDownloadMessage.style.display = 'none';
+
 
                 if (aktuellerEingeloggterBenutzer === ADMIN_USER) {
-                    resetButton.style.display = 'block';
+                    adminSection.style.display = 'block';
+                    initAdminUserSelect(); 
                 } else {
-                    resetButton.style.display = 'none';
+                    adminSection.style.display = 'none';
                 }
-                // Überprüfen, ob der eingeloggte Benutzer bereits gezogen hat
                 checkInitialDrawStatus();
-
             } else {
                 setNachrichtenStil(loginMessage, "Login fehlgeschlagen. Name oder Passwort falsch.", 'fehler');
                 aktuellerEingeloggterBenutzer = null;
@@ -236,16 +443,19 @@
         function handleLogout() {
             aktuellerEingeloggterBenutzer = null;
             appSection.style.display = 'none';
+            adminSection.style.display = 'none';
             loginSection.style.display = 'block';
-            resetButton.style.display = 'none';
-            logoutButton.style.display = 'none';
-            loginUserSelect.value = ""; // Dropdown zurücksetzen
-            setNachrichtenStil(ergebnisDiv, "Wähle deinen Namen und klicke auf 'Namen ziehen', um dein Wichtelgeheimnis zu lüften!", 'neutral');
+            loginUserSelect.value = ""; 
+            setNachrichtenStil(ergebnisDiv, "Bitte einloggen, um zu wichteln.", 'neutral');
+            loginMessage.style.display = 'none';
+            adminPasswordResetMessage.style.display = 'none';
+            adminDownloadMessage.style.display = 'none';
+            closeChangePasswordModal(); 
         }
         
+        // Wichtel-App Hauptfunktionen
         function checkInitialDrawStatus() {
             if (!aktuellerEingeloggterBenutzer) return;
-
             let ziehungen = getGespeicherteZiehungen();
             if (ziehungen[aktuellerEingeloggterBenutzer]) {
                 setNachrichtenStil(ergebnisDiv, `Du hattest bereits gezogen!<br>Dein Wichtelpartner ist: <strong>${ziehungen[aktuellerEingeloggterBenutzer]}</strong> 🎉`, 'erfolg');
@@ -254,64 +464,164 @@
             }
         }
 
-
         function losZiehen() {
             if (!aktuellerEingeloggterBenutzer) {
                 setNachrichtenStil(ergebnisDiv, "⚠️ Du musst eingeloggt sein, um zu ziehen.", 'fehler');
                 return;
             }
-
             let ziehungen = getGespeicherteZiehungen();
             let gezogenePersonen = getGezogenePersonen();
-
             if (ziehungen[aktuellerEingeloggterBenutzer]) {
                 setNachrichtenStil(ergebnisDiv, `Du hast bereits gezogen!<br>Dein Wichtelpartner ist: <strong>${ziehungen[aktuellerEingeloggterBenutzer]}</strong> 🎉 Frohe Vorbereitung!`, 'erfolg');
                 return;
             }
-
-            let moeglichePersonen = teilnehmer.filter(p => {
-                return p !== aktuellerEingeloggterBenutzer && !gezogenePersonen.includes(p);
-            });
-
+            let moeglichePersonen = teilnehmer.filter(p => p !== aktuellerEingeloggterBenutzer && !gezogenePersonen.includes(p));
             if (moeglichePersonen.length === 0) {
                 setNachrichtenStil(ergebnisDiv, "Alle Wichtel sind verteilt oder es gibt ein kleines Problemchen! 🎅 Bitte kontaktiere den Oberwichtel oder setze die Auslosung zurück.", 'warnung');
                 return;
             }
-
             const randomIndex = Math.floor(Math.random() * moeglichePersonen.length);
             const gezogenePerson = moeglichePersonen[randomIndex];
-
             ziehungen[aktuellerEingeloggterBenutzer] = gezogenePerson;
             gezogenePersonen.push(gezogenePerson); 
-
             localStorage.setItem(GLOBAL_ZIEHUNGEN_KEY, JSON.stringify(ziehungen));
             localStorage.setItem(GLOBAL_GEZOGENE_PERSONEN_KEY, JSON.stringify(gezogenePersonen));
-
             setNachrichtenStil(ergebnisDiv, `Hallo ${aktuellerEingeloggterBenutzer},<br>du wichtelst für: <strong>${gezogenePerson}</strong>! 🤫 Pssst! Viel Spaß beim Aussuchen!`, 'erfolg');
         }
 
-        function resetWichteln() {
-            if (aktuellerEingeloggterBenutzer !== ADMIN_USER) {
-                setNachrichtenStil(ergebnisDiv, "Nur der Administrator ('Rainer') darf die Auslosung zurücksetzen.", 'fehler');
-                return;
-            }
-            if (confirm("Möchtest du wirklich alle bisherigen Ziehungen löschen? Das ist für ein komplett neues Wichteln gedacht.")) {
-                localStorage.removeItem(GLOBAL_ZIEHUNGEN_KEY);
-                localStorage.removeItem(GLOBAL_GEZOGENE_PERSONEN_KEY);
-                setNachrichtenStil(ergebnisDiv, "Die Auslosung wurde zurückgesetzt. Das Wichtelkarussell kann von Neuem beginnen! 🎠", 'neutral');
-                // Status für alle Benutzer zurücksetzen (falls sie noch die Seite offen haben und nicht neu laden)
-                // Dies ist client-seitig, ein Neuladen ist am sichersten.
+        // Passwort ändern Modal Funktionen
+        function openChangePasswordModal() {
+            changePasswordModal.style.display = "block";
+            oldPasswordInputModal.value = "";
+            newPasswordInputModal.value = "";
+            confirmNewPasswordInputModal.value = "";
+            changePasswordMessageModal.style.display = "none";
+        }
+
+        function closeChangePasswordModal() {
+            changePasswordModal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == changePasswordModal) {
+                closeChangePasswordModal();
             }
         }
 
+        function handleChangePassword() {
+            if (!aktuellerEingeloggterBenutzer) {
+                setNachrichtenStil(changePasswordMessageModal, "Fehler: Nicht eingeloggt.", 'fehler');
+                return;
+            }
+            const oldPass = oldPasswordInputModal.value;
+            const newPass = newPasswordInputModal.value;
+            const confirmPass = confirmNewPasswordInputModal.value;
+
+            if (!oldPass || !newPass || !confirmPass) {
+                setNachrichtenStil(changePasswordMessageModal, "Bitte alle Felder ausfüllen.", 'fehler');
+                return;
+            }
+            if (passwoerter[aktuellerEingeloggterBenutzer] !== oldPass) {
+                setNachrichtenStil(changePasswordMessageModal, "Das alte Passwort ist nicht korrekt.", 'fehler');
+                return;
+            }
+            if (newPass.length < 5) {
+                setNachrichtenStil(changePasswordMessageModal, "Das neue Passwort muss mindestens 5 Zeichen lang sein.", 'fehler');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                setNachrichtenStil(changePasswordMessageModal, "Die neuen Passwörter stimmen nicht überein.", 'fehler');
+                return;
+            }
+            passwoerter[aktuellerEingeloggterBenutzer] = newPass;
+            savePasswoerter(); 
+            setNachrichtenStil(changePasswordMessageModal, "Passwort erfolgreich geändert! Du kannst das Fenster schließen.", 'erfolg');
+            oldPasswordInputModal.value = "";
+            newPasswordInputModal.value = "";
+            confirmNewPasswordInputModal.value = "";
+        }
+
+        // Admin Funktionen
+        function resetWichteln() { 
+            if (aktuellerEingeloggterBenutzer !== ADMIN_USER) {
+                setNachrichtenStil(ergebnisDiv, "Nur der Administrator darf die Auslosung zurücksetzen.", 'fehler'); 
+                return;
+            }
+            if (confirm(`Möchtest du wirklich alle bisherigen Ziehungen für ${aktuellesJahr} löschen? Passwörter bleiben erhalten.`)) {
+                localStorage.removeItem(GLOBAL_ZIEHUNGEN_KEY);
+                localStorage.removeItem(GLOBAL_GEZOGENE_PERSONEN_KEY);
+                setNachrichtenStil(ergebnisDiv, `Die Auslosung für ${aktuellesJahr} wurde zurückgesetzt. Das Wichtelkarussell kann von Neuem beginnen! 🎠`, 'neutral');
+                setNachrichtenStil(adminDownloadMessage, `Auslosung für ${aktuellesJahr} wurde zurückgesetzt.`, 'warnung');
+            }
+        }
+
+        function adminResetUserPassword() {
+            if (aktuellerEingeloggterBenutzer !== ADMIN_USER) {
+                 setNachrichtenStil(adminPasswordResetMessage, "Fehler: Nur Admins dürfen Passwörter zurücksetzen.", 'fehler');
+                return;
+            }
+            const userToReset = adminUserSelectForPasswordReset.value;
+            if (!userToReset) {
+                setNachrichtenStil(adminPasswordResetMessage, "Bitte wähle einen Benutzer aus, dessen Passwort zurückgesetzt werden soll.", 'fehler');
+                return;
+            }
+
+            if (!defaultPasswoerter[userToReset]) {
+                 setNachrichtenStil(adminPasswordResetMessage, `Fehler: Kein Standardpasswort für ${userToReset} definiert.`, 'fehler');
+                return;
+            }
+            
+            if (confirm(`Möchtest du das Passwort für ${userToReset} wirklich auf das Standardpasswort zurücksetzen?`)) {
+                passwoerter[userToReset] = defaultPasswoerter[userToReset];
+                savePasswoerter();
+                setNachrichtenStil(adminPasswordResetMessage, `Passwort für ${userToReset} wurde erfolgreich auf Standard zurückgesetzt.`, 'erfolg');
+                adminUserSelectForPasswordReset.value = ""; 
+            }
+        }
+
+        function downloadDraws() {
+            if (aktuellerEingeloggterBenutzer !== ADMIN_USER) {
+                setNachrichtenStil(adminDownloadMessage, "Fehler: Nur Admins dürfen die Ziehungen herunterladen.", 'fehler');
+                return;
+            }
+            const ziehungen = getGespeicherteZiehungen();
+            if (Object.keys(ziehungen).length === 0) {
+                setNachrichtenStil(adminDownloadMessage, `Es gibt noch keine Ziehungen für ${aktuellesJahr} zum Herunterladen.`, 'warnung');
+                return;
+            }
+
+            let fileContent = `Wichtel-Ziehungen ${aktuellesJahr}\n====================================\n\n`;
+            for (const zieher in ziehungen) {
+                fileContent += `${zieher} wichtelt für: ${ziehungen[zieher]}\n`;
+            }
+            fileContent += `\nStand: ${new Date().toLocaleString('de-DE')}\n`;
+
+            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Wichtel_Ziehungen_${aktuellesJahr}.txt`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setNachrichtenStil(adminDownloadMessage, `Ziehungsdatei für ${aktuellesJahr} wurde heruntergeladen.`, 'erfolg');
+        }
+
+
+        // Seitenstart
         window.onload = () => {
+            initDynamicYears();
+            loadPasswoerter(); 
             initLoginDropdown();
-            // Standardmäßig Login-Bereich anzeigen
             loginSection.style.display = 'block';
             appSection.style.display = 'none';
-            loginMessage.style.display = 'none'; // Keine Login-Nachricht initial
+            adminSection.style.display = 'none';
+            loginMessage.style.display = 'none'; 
+            changePasswordMessageModal.style.display = 'none';
+            adminPasswordResetMessage.style.display = 'none';
+            adminDownloadMessage.style.display = 'none';
             setNachrichtenStil(ergebnisDiv, "Bitte einloggen, um zu wichteln.", 'neutral');
-
         };
     </script>
 </body>
